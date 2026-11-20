@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-FROM --platform=$BUILDPLATFORM golang:1.27.3 AS build
+FROM --platform=$BUILDPLATFORM golang:1.27.4 AS build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
