@@ -82,9 +82,10 @@ step "registries and containers"
 d run -d --name registry -p 5000:5000 registry:2 >/dev/null
 d run -d --name fake -p 5002:5000 python:3.13-alpine python -c "$(cat "$HERE/fake429.py")" >/dev/null
 wait_for 30 "registry" docker exec "$E" wget -qO- "http://$REG/v2/"
-# One copy per version from Docker Hub, the rest within the local registry.
-copy busybox:1.36 "$REG/src:old"
-copy busybox:1.37 "$REG/src:new"
+# One copy per version via mirror.gcr.io (no Docker Hub pull limit), the rest within the
+# local registry.
+copy mirror.gcr.io/library/busybox:1.36 "$REG/src:old"
+copy mirror.gcr.io/library/busybox:1.37 "$REG/src:new"
 copy "$REG/src:old" "$REG/app:1"
 copy "$REG/src:old" "$REG/svc:1"
 copy "$REG/src:old" "$REG/library/mirrortest:1"
