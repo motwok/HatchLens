@@ -102,8 +102,8 @@ sudo tests/integration/run.sh hatchlens:test "$PWD/cover-integration"
 
 `tests/integration/run-images.sh IMAGE COVERDIR STORE` (image checks) starts a `docker:dind` engine with
 the `classic` or the `containerd` image store and runs everything inside it: a local `registry:2`, a
-fake registry answering 429, test images copied from Docker Hub's `busybox`, a Swarm stack, and the
-image under test. It checks the comparison end to end (newer image pushed, pulled, container recreated),
+fake registry answering 429, test images copied from `busybox` via `mirror.gcr.io` (no Docker Hub pull
+limit), a Swarm stack, and the image under test. It checks the comparison end to end (newer image pushed, pulled, container recreated),
 pinned and local containers, excludes, a registry mirror, Swarm task updates, the rate limit backoff, a
 restart with the state and the endpoints. It needs Docker with `--privileged` and access to Docker Hub:
 
