@@ -12,6 +12,14 @@
 [![Go](https://img.shields.io/github/go-mod/go-version/motwok/HatchLens)](go.mod)
 ![Platforms](https://img.shields.io/badge/platforms-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20windows%2Famd64-blue)
 [![License](https://img.shields.io/github/license/motwok/HatchLens)](LICENSE)
+![Audience](https://img.shields.io/badge/audience-Docker%20admins-blueviolet)
+[![Image](https://img.shields.io/badge/image-ghcr.io%2Fmotwok%2Fhatchlens-blue?logo=docker&logoColor=white)](https://github.com/motwok/HatchLens/pkgs/container/hatchlens)
+![Works with](https://img.shields.io/badge/works%20with-Prometheus-e6522c?logo=prometheus&logoColor=white)
+![Use](https://img.shields.io/badge/use-production-brightgreen)
+![Host changes](https://img.shields.io/badge/host%20changes-project%20IDs%20only-brightgreen)
+![Filesystems](https://img.shields.io/badge/filesystems-ext4%20%7C%20XFS%20%7C%20ZFS%20%7C%20NTFS-blue)
+![Windows](https://img.shields.io/badge/Windows-container%20%7C%20service%20%28MSI%29-0078D6)
+[![Downloads](https://img.shields.io/github/downloads/motwok/HatchLens/total)](https://github.com/motwok/HatchLens/releases)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Me-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/motwok)
 
 Per-directory disk usage, image update checks and CPU, memory, disk and network usage of all
