@@ -1,4 +1,10 @@
-# HatchLens
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg">
+    <img src="docs/logo.svg" alt="" height="40" align="right">
+  </picture>
+  HatchLens
+</h1>
 
 [![Build](https://github.com/motwok/HatchLens/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/motwok/HatchLens/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/motwok/HatchLens)](https://github.com/motwok/HatchLens/releases/latest)
