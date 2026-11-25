@@ -265,6 +265,13 @@ jobs:
       - name: Image changed since last release?
         id: changed
         run: |
+          # Only the tip of master: no dispatch on another branch, no re-run of an older commit.
+          tip=$(git ls-remote origin refs/heads/master | cut -f1)
+          if [ "$tip" != "$GITHUB_SHA" ]; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "$GITHUB_SHA is not the tip of master, no release." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           last=$(git describe --tags --abbrev=0 2>/dev/null || true)
           if [ -z "$last" ] || ! git diff --quiet "$last" HEAD -- '*.go' ':(exclude)*_test.go' go.mod go.sum Dockerfile Dockerfile.windows packaging; then
             echo "release=true" >> "$GITHUB_OUTPUT"
@@ -371,29 +378,26 @@ jobs:
           # imagetools create drops os.version, docker manifest annotate keeps it.
           linux=$(docker buildx imagetools inspect --raw "$IMG@$LINUX" | jq -r '.manifests[].digest')
           win=$(jq -r '"\(.["containerimage.digest"]) \(.["containerimage.descriptor"].platform["os.version"])"' meta-*.json)
-          docker run --rm -i -e IMG -e VERSION -e LINUX_DIGESTS="$linux" -e WIN="$win" \
-            -v "$HOME/.docker/config.json:/root/.docker/config.json:ro" \
-            docker:29-cli@sha256:4d742ab934c2149b628bf26369ac3ec51cb91e2e28fe6722a0e86a6d6efc4bd5 sh -eu <<'EOF'
+          # Without os.version Windows hosts would not get their variant; check before anything is pushed.
+          [ "$(echo "$linux" | wc -w)" -eq 2 ] || { echo "expected 2 Linux images: $linux"; exit 1; }
+          echo "$win" | awk 'NF != 2 || $2 !~ /^[0-9.]+$/ { bad = 1 } END { exit bad || NR != 3 }' ||
+            { echo "Windows images incomplete: $win"; exit 1; }
+          # :latest only after the version tag is pushed and checked.
           for tag in "$VERSION" latest; do
-            refs=
-            for d in $LINUX_DIGESTS $(echo "$WIN" | cut -d' ' -f1); do refs="$refs $IMG@$d"; done
-            docker manifest create "$IMG:$tag" $refs
-            echo "$WIN" | while read -r d v; do
-              docker manifest annotate --os-version "$v" "$IMG:$tag" "$IMG@$d"
-            done
-            docker manifest push --purge "$IMG:$tag"
+            docker run --rm -i -e IMG -e TAG="$tag" -e LINUX_DIGESTS="$linux" -e WIN="$win" \
+              -v "$HOME/.docker/config.json:/root/.docker/config.json:ro" \
+              docker:29-cli@sha256:4d742ab934c2149b628bf26369ac3ec51cb91e2e28fe6722a0e86a6d6efc4bd5 sh -eu <<'EOF'
+          refs=
+          for d in $LINUX_DIGESTS $(echo "$WIN" | cut -d' ' -f1); do refs="$refs $IMG@$d"; done
+          docker manifest create "$IMG:$TAG" $refs
+          echo "$WIN" | while read -r d v; do
+            docker manifest annotate --os-version "$v" "$IMG:$TAG" "$IMG@$d"
           done
+          docker manifest push --purge "$IMG:$TAG"
           EOF
-      - name: Check manifest list
-        env:
-          VERSION: ${{ steps.drafter.outputs.resolved_version }}
-        if: steps.changed.outputs.release == 'true'
-        run: |
-          # Without os.version Windows hosts would not get their variant.
-          for tag in "$VERSION" latest; do
             docker buildx imagetools inspect --raw "$IMG:$tag" | jq -e '[.manifests[].platform] |
               ([.[] | select(.os == "linux")] | length) == 2 and
-              ([.[] | select(.os == "windows" and (.["os.version"] // "") != "")] | length) == 3' >/dev/null ||
+              ([.[] | select(.os == "windows" and (.["os.version"] // "" | test("^[0-9.]+$")))] | length) == 3' >/dev/null ||
               { echo "manifest list $IMG:$tag incomplete"; exit 1; }
           done
       - name: Publish release
