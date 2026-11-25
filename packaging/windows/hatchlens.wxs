@@ -8,6 +8,8 @@
     <MajorUpgrade AllowSameVersionUpgrades="yes"
                   DowngradeErrorMessage="A newer version of HatchLens is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Icon Id="hatchlens.ico" SourceFile="$(sys.SOURCEFILEDIR)hatchlens.ico" />
+    <Property Id="ARPPRODUCTICON" Value="hatchlens.ico" />
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="HatchLens">
         <Component Id="Service">

@@ -9,6 +9,8 @@
     <MajorUpgrade AllowSameVersionUpgrades="yes"
                   DowngradeErrorMessage="A newer version of HatchLens Host is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Icon Id="hatchlens.ico" SourceFile="$(sys.SOURCEFILEDIR)hatchlens.ico" />
+    <Property Id="ARPPRODUCTICON" Value="hatchlens.ico" />
     <Property Id="TCP" Secure="yes" />
     <SetProperty Id="TCPARG" Value="-tcp [TCP]" Before="InstallInitialize" Sequence="execute" Condition="TCP" />
     <StandardDirectory Id="ProgramFiles64Folder">
